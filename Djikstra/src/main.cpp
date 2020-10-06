@@ -3,6 +3,7 @@
 #include "chemin.h"
 #include "donnee.h"
 #include "trajet.h"
+#include "direction.h"
 
 using namespace std;
 
@@ -11,7 +12,7 @@ using namespace std;
 
 bool uniques = true;
 
-vector<char> PARCOURS = {'A', 'C'};
+vector<char> PARCOURS = {'A', 'C', 'D'};
 
 Chemin plan[12] = {Chemin('S', '6', 5), Chemin('6', '7', 2),
                    Chemin('7', 'A', 3), Chemin('7', '8', 3),
@@ -19,6 +20,12 @@ Chemin plan[12] = {Chemin('S', '6', 5), Chemin('6', '7', 2),
                    Chemin('8', '0', 4), Chemin('6', '0', 1),
                    Chemin('7', '0', 2), Chemin('9', 'C', 2),
                    Chemin('0', '9', 3), Chemin('0', 'D', 3)};
+
+Direction liste_direction[12] = {Direction('S', '6', '7', 'G'), Direction('S', '6', '0', 'T'),
+                                 Direction('6', '7', 'A', 'T'), Direction('6', '7', '8', 'D'),
+                                 Direction('6', '10', '8', 'G'), Direction('6', '10', '9', 'T'),
+                                 Direction('6', '10', 'D', 'D'), Direction('S', '6', '5', 'G'),
+                                 Direction('S', '6', 'D', 'G'), Direction('S', '6', '5', 'G')}
 
 vector<vector<Donnee>> liste = {{Donnee('S', INF), Donnee('A', INF),
                         Donnee('B', INF), Donnee('C', INF),
