@@ -3,7 +3,7 @@
 #include "chemin.h"
 #include "donnee.h"
 #include "trajet.h"
-#include "direction.h"
+#include "intersection.h"
 
 using namespace std;
 
@@ -14,18 +14,18 @@ bool uniques = true;
 
 vector<char> PARCOURS = {'A', 'C', 'D'};
 
-Chemin plan[12] = {Chemin('S', '6', 5), Chemin('6', '7', 2),
+Chemin plan[11] = {Chemin('S', '6', 5), Chemin('6', '7', 2),
                    Chemin('7', 'A', 3), Chemin('7', '8', 3),
                    Chemin('8', 'B', 3), Chemin('8', '9', 4),
                    Chemin('8', '0', 4), Chemin('6', '0', 1),
-                   Chemin('7', '0', 2), Chemin('9', 'C', 2),
-                   Chemin('0', '9', 3), Chemin('0', 'D', 3)};
+                   Chemin('9', 'C', 2), Chemin('0', '9', 3), 
+                   Chemin('0', 'D', 3)};
 
-Direction liste_direction[12] = {Direction('S', '6', '7', 'G'), Direction('S', '6', '0', 'T'),
-                                 Direction('6', '7', 'A', 'T'), Direction('6', '7', '8', 'D'),
-                                 Direction('6', '10', '8', 'G'), Direction('6', '10', '9', 'T'),
-                                 Direction('6', '10', 'D', 'D'), Direction('S', '6', '5', 'G'),
-                                 Direction('S', '6', 'D', 'G'), Direction('S', '6', '5', 'G')}
+Intersection liste_intersection[9] = {Intersection('6', '7', 'S', 'R', '0'), Intersection('7', 'A', 'R', '6', '8'),
+                                      Intersection('0', '8', '6', 'D', '9'), Intersection('8', 'B', '7', '0', '9'),
+                                      Intersection('9', 'R', '8', '0', 'C'), Intersection('A', 'R', 'R', 'R', '7'),
+                                      Intersection('B', 'R', 'R', 'R', '8'), Intersection('C', 'R', 'R', 'R', '9'),
+                                      Intersection('D', 'R', 'R', 'R', '0')};
 
 vector<vector<Donnee>> liste = {{Donnee('S', INF), Donnee('A', INF),
                         Donnee('B', INF), Donnee('C', INF),
@@ -63,6 +63,13 @@ void afficher_trajet(Trajet trajet){
   }
   cout << endl;
   cout << "Distance : " << trajet.distance << endl;
+}
+
+void afficher_ordre(vector<char> ordres){
+  for(char ordre : ordres){
+    cout << "-> " << ordre;
+  }
+  cout << endl;
 }
 
 int chercher_distance(char point_A, char point_B){
@@ -194,7 +201,7 @@ Trajet compacter_trajet_complet(vector<Trajet> trajet_complet){
   return trajet_final;
 }
 
-void trouver_trajet(vector<char> parcours){
+Trajet trouver_trajet(vector<char> parcours){
   char position = 'S';
   vector<Trajet> liste_trajet = {};
   vector<Trajet> trajet_complet = {};
@@ -222,10 +229,45 @@ void trouver_trajet(vector<char> parcours){
 
   trajet = djikstra(position, 'S'); //On retourne au Start
   trajet_complet.insert(trajet_complet.end(), trajet);
-
   trajet_final = compacter_trajet_complet(trajet_complet);
-  cout << "Trajet final : ";
-  afficher_trajet(trajet_final);
+
+  return trajet_final;
+}
+
+char trouver_direction(char from, char inter, char to){
+  Intersection intersection = Intersection(' ', ' ', ' ', ' ', ' ');
+  vector<char> direction = {'B', 'D', 'T', 'G'};
+  int pos = 0;
+
+  for(Intersection intersect : liste_intersection){  //On cherche la bonne intersection
+    if(intersect.intersection == inter){
+      intersection = intersect;
+    }
+  }
+  for(int k=0;k<4;k++){
+    if(intersection.way[k] == from){
+      pos = k;
+    }
+  }
+  for(int k=0;k<4;k++){
+    if(intersection.way[(pos+k)%4] == to){
+      return direction[k];
+    }
+  }
+
+  return 'E'; //Useless
+}
+
+vector<char> trouver_ordre(Trajet trajet){
+  vector<char> ordre = {'F'};
+
+  for(int k=0;k<trajet.parcours.size()-2;k++){
+    ordre.insert(ordre.end(), trouver_direction(trajet.parcours[k], trajet.parcours[k+1], trajet.parcours[k+2]));
+    ordre.insert(ordre.end(), 'F');
+  }
+  ordre.insert(ordre.end(), 'B');
+
+  return ordre;
 }
 
 void setup() {
@@ -233,10 +275,19 @@ void setup() {
   Serial.begin(9600);
 }
 
+Trajet trajet = Trajet({}, 0);
+vector<char> ordre = {};
+
 void loop() {
   // put your main code here, to run repeatedly:
   if(uniques == true){
-    trouver_trajet(PARCOURS);
+    trajet = trouver_trajet(PARCOURS);
+    cout << "Trajet final : ";
+    afficher_trajet(trajet);
+
+    ordre = trouver_ordre(trajet);
+    cout << "Ordres : ";
+    afficher_ordre(ordre);
   }
   uniques = false;
 }
