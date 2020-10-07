@@ -2,8 +2,8 @@
 #include <WebServer.h>
 
 // SSID & Password
-const char* ssid = "zpdeiPhone";  // Enter your SSID here
-const char* password = "zhang199841";  //Enter your Password here
+const char* ssid = "HUAWEI P30 ALEX";  // Enter your SSID here
+const char* password = "AlexConnection";  //Enter your Password here
 
 WebServer server(80);  // Object of WebServer(HTTP port, 80 is defult)
 
@@ -17,8 +17,8 @@ void setup() {
 
   // Check wi-fi is connected to wi-fi network
   while (WiFi.status() != WL_CONNECTED) {
-  delay(1000);
-  Serial.print(".");
+    delay(1000);
+    Serial.print(".");
   }
   Serial.println("");
   Serial.println("WiFi connected successfully");
@@ -29,7 +29,7 @@ void setup() {
 
   server.begin();
   Serial.println("HTTP server started");
-  delay(100); 
+  delay(100);
 }
 
 void loop() {
