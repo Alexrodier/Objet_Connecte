@@ -265,7 +265,7 @@ vector<char> trouver_ordre(Trajet trajet){
     ordre.insert(ordre.end(), trouver_direction(trajet.parcours[k], trajet.parcours[k+1], trajet.parcours[k+2]));
     ordre.insert(ordre.end(), 'F');
   }
-  ordre.insert(ordre.end(), 'B');
+  ordre.insert(ordre.end(), 'S');
 
   return ordre;
 }
