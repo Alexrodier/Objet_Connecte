@@ -36,30 +36,32 @@ void run(){
   }else{
     analogWrite(ENA, SPEED);
     analogWrite(ENB, SPEED);
-    digitalWrite(IN1, HIGH);
-    digitalWrite(IN2, LOW);
-    digitalWrite(IN3, LOW);
-    digitalWrite(IN4, HIGH);
+    forward();
     
     if(digitalRead(SensorLeft)==1 && digitalRead(SensorRight)==0){ //Tourne vers la droite
-      digitalWrite(IN1, LOW);
-      digitalWrite(IN2, HIGH);
-      digitalWrite(IN3, LOW);
-      digitalWrite(IN4, HIGH);
+      turn_right();
     }
     if(digitalRead(SensorRight)==1 && digitalRead(SensorLeft)==0){ //Tourne vers la gauche
-      digitalWrite(IN1, HIGH);
-      digitalWrite(IN2, LOW);
-      digitalWrite(IN3, HIGH);
-      digitalWrite(IN4, LOW);
+      turn_left();
     }
     if(digitalRead(SensorRight)==1 && digitalRead(SensorLeft)==1){  //Demi tour
-        digitalWrite(IN1, HIGH);
-        digitalWrite(IN2, LOW);
-        digitalWrite(IN3, HIGH);
-        digitalWrite(IN4, LOW);
+      back();
     }
   }
+}
+
+void back(){
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+}
+
+void forward(){
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
 }
 
 void brake(){
@@ -68,12 +70,14 @@ void brake(){
 }
 
 void turn_left(){
-  analogWrite(ENA, SPEED);
-  analogWrite(ENB, SPEED);
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
+}
+
+void turn_left_90(){
+  turn_left();
   delay(TIME_TURN);
 }
 
@@ -84,20 +88,11 @@ void turn_right(){
   digitalWrite(IN2, HIGH);
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, HIGH);
-  delay(TIME_TURN);
 }
 
-void forward(){
-  analogWrite(ENA, SPEED);
-  analogWrite(ENB, SPEED);
-  digitalWrite(IN1, HIGH);
-  digitalWrite(IN2, LOW);
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, HIGH);
-
-  if(mesure_Distance() < 30){
-    brake();
-  }
+void turn_right_90(){
+  turn_right();
+  delay(TIME_TURN);
 }
 
 float mesure_Distance(){
