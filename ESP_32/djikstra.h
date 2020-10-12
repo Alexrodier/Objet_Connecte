@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <iostream>
 #include "chemin.h"
 #include "donnee.h"
@@ -12,18 +11,20 @@ using namespace std;
 
 bool uniques = true;
 
-Chemin plan[11] = {Chemin('S', '6', 5), Chemin('6', '7', 2),
-                   Chemin('7', 'A', 3), Chemin('7', '8', 3),
-                   Chemin('8', 'B', 3), Chemin('8', '9', 4),
-                   Chemin('8', '0', 4), Chemin('6', '0', 1),
-                   Chemin('9', 'C', 2), Chemin('0', '9', 3), 
-                   Chemin('0', 'D', 3)};
+Chemin plan[14] = {Chemin('S', '1', 2), Chemin('1', '4', 5),
+                   Chemin('1', '2', 4), Chemin('1', '5', 6),
+                   Chemin('2', 'C', 2), Chemin('2', '4', 4),
+                   Chemin('2', '3', 4), Chemin('3', 'B', 2),
+                   Chemin('4', '3', 5), Chemin('3', '6', 5), 
+                   Chemin('4', '6', 4), Chemin('6', 'A', 2),
+                   Chemin('6', '5', 4), Chemin('5', 'D', 2)};
 
-Intersection liste_intersection[9] = {Intersection('6', '7', 'S', 'R', '0'), Intersection('7', 'A', 'R', '6', '8'),
-                                      Intersection('0', '8', '6', 'D', '9'), Intersection('8', 'B', '7', '0', '9'),
-                                      Intersection('9', 'R', '8', '0', 'C'), Intersection('A', 'R', 'R', 'R', '7'),
-                                      Intersection('B', 'R', 'R', 'R', '8'), Intersection('C', 'R', 'R', 'R', '9'),
-                                      Intersection('D', 'R', 'R', 'R', '0')};
+Intersection liste_intersection[11] = {Intersection('S', 'R', 'R', 'R', '1'), Intersection('3', '4', '2', 'B', '6'),
+                                      Intersection('1', '5', 'S', '2', '4'), Intersection('B', '3', 'R', 'R', 'R'),
+                                      Intersection('2', '4', '1', 'C', '3'), Intersection('6', '5', '4', '3', 'A'),
+                                      Intersection('C', '2', 'R', 'R', 'R'), Intersection('A', 'R', '6', 'R', 'R'),
+                                      Intersection('4', '1', '2', '3', '6'), Intersection('5', 'D', '1', '6', 'R'), 
+                                      Intersection('D', 'R', 'R', '5', 'R')};
 
 vector<vector<Donnee>> liste = {{Donnee('S', INF), Donnee('A', INF),
                         Donnee('B', INF), Donnee('C', INF),
@@ -234,7 +235,7 @@ Trajet trouver_trajet(vector<char> parcours){
 
 char trouver_direction(char from, char inter, char to){
   Intersection intersection = Intersection(' ', ' ', ' ', ' ', ' ');
-  vector<char> direction = {'B', 'D', 'T', 'G'};
+  vector<char> direction = {'B', 'R', 'F', 'L'};
   int pos = 0;
 
   for(Intersection intersect : liste_intersection){  //On cherche la bonne intersection
@@ -257,26 +258,28 @@ char trouver_direction(char from, char inter, char to){
 }
 
 vector<char> trouver_ordre(Trajet trajet){
-  vector<char> ordre = {'F'};
+  vector<char> ordre = {'G'};
 
   for(int k=0;k<trajet.parcours.size()-2;k++){
     ordre.insert(ordre.end(), trouver_direction(trajet.parcours[k], trajet.parcours[k+1], trajet.parcours[k+2]));
-    ordre.insert(ordre.end(), 'F');
+    ordre.insert(ordre.end(), 'G');
   }
+  ordre.insert(ordre.end(), 'B');
   ordre.insert(ordre.end(), 'S');
 
   return ordre;
 }
 
 Trajet trajet = Trajet({}, 0);
-vector<char> ordre = {};
+vector<char> ordres;
 
-void get_order(vector<char> parcours) {
+vector<char> get_order(vector<char> parcours) {
   trajet = trouver_trajet(parcours);
-  cout << "Trajet final : ";
+  //cout << "Trajet final : ";
   afficher_trajet(trajet);
 
-  ordre = trouver_ordre(trajet);
-  cout << "Ordres : ";
-  afficher_ordre(ordre);
+  ordres = trouver_ordre(trajet);
+  //cout << "Ordres : ";
+  afficher_ordre(ordres);
+  return ordres;
 }
