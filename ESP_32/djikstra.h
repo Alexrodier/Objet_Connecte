@@ -19,25 +19,27 @@ Chemin plan[14] = {Chemin('S', '1', 2), Chemin('1', '4', 5),
                    Chemin('4', '6', 4), Chemin('6', 'A', 2),
                    Chemin('6', '5', 4), Chemin('5', 'D', 2)};
 
-Intersection liste_intersection[11] = {Intersection('S', 'R', 'R', 'R', '1'), Intersection('3', '4', '2', 'B', '6'),
-                                      Intersection('1', '5', 'S', '2', '4'), Intersection('B', '3', 'R', 'R', 'R'),
-                                      Intersection('2', '4', '1', 'C', '3'), Intersection('6', '5', '4', '3', 'A'),
-                                      Intersection('C', '2', 'R', 'R', 'R'), Intersection('A', 'R', '6', 'R', 'R'),
-                                      Intersection('4', '1', '2', '3', '6'), Intersection('5', 'D', '1', '6', 'R'), 
-                                      Intersection('D', 'R', 'R', '5', 'R')};
+vector<Intersection> liste_intersection = {Intersection('S', 'R', 'R', 'R', '1', 0000000000), Intersection('3', '4', '2', 'B', '6', 3111436185),
+                                           Intersection('1', '5', 'S', '2', '4', 3230524978), Intersection('B', '3', 'R', 'R', 'R', 0000000000),
+                                           Intersection('2', '4', '1', 'C', '3', 3502435378), Intersection('6', '5', '4', '3', 'A', 3492872242),
+                                           Intersection('C', '2', 'R', 'R', 'R', 0000000000), Intersection('A', 'R', '6', 'R', 'R', 0000000000),
+                                           Intersection('4', '1', '2', '3', '6', 3338133545), Intersection('5', 'D', '1', '6', 'R', 3828801578), 
+                                           Intersection('D', 'R', 'R', '5', 'R', 0000000000)};
 
 vector<vector<Donnee>> liste = {{Donnee('S', INF), Donnee('A', INF),
-                        Donnee('B', INF), Donnee('C', INF),
-                        Donnee('D', INF), Donnee('6', INF),
-                        Donnee('7', INF), Donnee('8', INF),
-                        Donnee('9', INF), Donnee('0', INF)}};
+                                 Donnee('B', INF), Donnee('C', INF),
+                                 Donnee('D', INF), Donnee('1', INF),
+                                 Donnee('2', INF), Donnee('3', INF),
+                                 Donnee('4', INF), Donnee('5', INF),
+                                 Donnee('6', INF)}};
 
 void init_liste(){
   liste = {{Donnee('S', INF), Donnee('A', INF),
             Donnee('B', INF), Donnee('C', INF),
-            Donnee('D', INF), Donnee('6', INF),
-            Donnee('7', INF), Donnee('8', INF),
-            Donnee('9', INF), Donnee('0', INF)}};
+            Donnee('D', INF), Donnee('1', INF),
+            Donnee('2', INF), Donnee('3', INF),
+            Donnee('4', INF), Donnee('5', INF),
+            Donnee('6', INF)}};
 }  
 
 void afficher_liste(){
@@ -234,7 +236,7 @@ Trajet trouver_trajet(vector<char> parcours){
 }
 
 char trouver_direction(char from, char inter, char to){
-  Intersection intersection = Intersection(' ', ' ', ' ', ' ', ' ');
+  Intersection intersection = Intersection(' ', ' ', ' ', ' ', ' ', 0);
   vector<char> direction = {'B', 'R', 'F', 'L'};
   int pos = 0;
 
@@ -276,10 +278,10 @@ vector<char> ordres;
 vector<char> get_order(vector<char> parcours) {
   trajet = trouver_trajet(parcours);
   //cout << "Trajet final : ";
-  afficher_trajet(trajet);
+  //afficher_trajet(trajet);
 
   ordres = trouver_ordre(trajet);
   //cout << "Ordres : ";
-  afficher_ordre(ordres);
+  //afficher_ordre(ordres);
   return ordres;
 }

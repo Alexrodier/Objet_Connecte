@@ -3,6 +3,15 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include "djikstra.h"
+///////// RFID import
+#include <SPI.h>
+#include <MFRC522.h>
+#define SS_PIN 5
+#define RST_PIN 0
+MFRC522 mfrc522(SS_PIN, RST_PIN);   // Create MFRC522 instance.
+//////////////////////////////
+
+
 
 // SSID & Password
 const char* ssid = "HUAWEI P30 ALEX";  // Enter your SSID here
@@ -16,7 +25,10 @@ void setup() {
   pinMode(3, INPUT);
   //Serial.println("Try Connecting to ");
   //Serial.println(ssid);
-
+    ////   RFID settings
+    SPI.begin();            // Init SPI bus
+    mfrc522.PCD_Init(); // Init MFRC522 card
+    /////////////
   // Connect to your wi-fi modem
   WiFi.begin(ssid, password);
 
@@ -37,16 +49,69 @@ void setup() {
   delay(100);
 }
 
+unsigned long getID(){
+  if ( ! mfrc522.PICC_ReadCardSerial()) { //Since a PICC placed get Serial and continue
+    return -1;
+  }
+  unsigned long hex_num;
+  hex_num =  mfrc522.uid.uidByte[0] << 24;
+  hex_num += mfrc522.uid.uidByte[1] << 16;
+  hex_num += mfrc522.uid.uidByte[2] <<  8;
+  hex_num += mfrc522.uid.uidByte[3];
+  mfrc522.PICC_HaltA(); // Stop reading
+  return hex_num;
+}
+
+char intersection = '0';
+unsigned long checkUid;
+int start = 0;
+
+void send_order(int nb_order){
+  for(int k=0;k<nb_order;k++){  
+    Serial.write(ordres[0]);
+    ordres.erase(ordres.begin());
+  }
+}
+
+char command = 'a';
+char card = '0';
+
 void loop() {
   server.handleClient();
   if(parcours.size()){
     get_order(parcours);
     parcours.clear();
+  }
+  if(start == 0 && ordres.size()){
+    send_order(1);
+    start = 1;
+  }
+  if(mfrc522.PICC_IsNewCardPresent()){
+    checkUid = getID();
+    if(checkUid != -1 && checkUid != card){
+      card = checkUid;
+      intersection = rechercher_Intersection(checkUid, liste_intersection);
+      send_order(2);
+    }
+  }
+  if(Serial.available()){
+    command = Serial.read();
+    if(command == 'W'){
+      send_order(2);
+    }
+  }
+
+  /*if(parcours.size()){
+    get_order(parcours);
+    parcours.clear();
+    intersection = rechercher_Intersection(getID(), liste_Intersection);
+    if
     for(char ordre : ordres){
-      //Serial.write(ordre);
+      Serial.write(ordre);
     }
     ordres.clear();
-  }
+  }*/
+  
 }
 
 // HTML & CSS contents which display on web server
