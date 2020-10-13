@@ -8,7 +8,7 @@ const int SensorRight = 10;
 const int SensorLeft = 2;
 
 const int SPEED = 180;
-const int TIME_TURN = 520;
+const int SPEED_TURN = 220;
 const int TIME_FORWARD = 100;
 const int DISTANCE_STOP = 30;
 
@@ -35,13 +35,14 @@ void setup(){
 
 void back(){
   while(digitalRead(SensorRight) != 0 || digitalRead(SensorLeft) != 0){
-    analogWrite(ENA, SPEED);
-    analogWrite(ENB, SPEED);
+    analogWrite(ENA, SPEED_TURN);
+    analogWrite(ENB, SPEED_TURN);
     digitalWrite(IN1, HIGH);
     digitalWrite(IN2, LOW);
     digitalWrite(IN3, HIGH);
     digitalWrite(IN4, LOW);
   }
+  brake();
 }
 
 void forward(){
@@ -60,8 +61,8 @@ void brake(){
 }
 
 void turn_left(){
-  analogWrite(ENA, SPEED);
-  analogWrite(ENB, SPEED);
+  analogWrite(ENA, SPEED_TURN);
+  analogWrite(ENB, SPEED_TURN);
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
   digitalWrite(IN3, HIGH);
@@ -69,13 +70,17 @@ void turn_left(){
 }
 
 void turn_left_90(){
-  turn_left();
-  delay(TIME_TURN);
+  while(digitalRead(SensorRight) == 0 && digitalRead(SensorLeft) == 0){
+    turn_left();
+  }
+  while(digitalRead(SensorRight) == 1 || digitalRead(SensorLeft) == 1){
+    turn_left();
+  }
 }
 
 void turn_right(){
-  analogWrite(ENA, SPEED);
-  analogWrite(ENB, SPEED);
+  analogWrite(ENA, SPEED_TURN);
+  analogWrite(ENB, SPEED_TURN);
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);
   digitalWrite(IN3, LOW);
@@ -83,8 +88,12 @@ void turn_right(){
 }
 
 void turn_right_90(){
-  turn_right();
-  delay(TIME_TURN);
+  while(digitalRead(SensorRight) == 0 && digitalRead(SensorLeft) == 0){
+    turn_right();
+  }
+  while(digitalRead(SensorRight) == 1 || digitalRead(SensorLeft) == 1){
+    turn_right();
+  }
 }
 
 float mesure_Distance(){
@@ -102,22 +111,24 @@ void runing(){
   if(mesure_Distance() < DISTANCE_STOP){
     brake();
   }else{
-    analogWrite(ENA, SPEED);
-    analogWrite(ENB, SPEED);
-    digitalWrite(IN1, HIGH);
-    digitalWrite(IN2, LOW);
-    digitalWrite(IN3, LOW);
-    digitalWrite(IN4, HIGH);
     if(digitalRead(SensorLeft)==1 && digitalRead(SensorRight)==0){ //Tourne vers la droite
       turn_right();
     }
-    if(digitalRead(SensorRight)==1 && digitalRead(SensorLeft)==0){ //Tourne vers la gauche
+    else if(digitalRead(SensorRight)==1 && digitalRead(SensorLeft)==0){ //Tourne vers la gauche
       turn_left();
     }
-    if(digitalRead(SensorRight)==1 && digitalRead(SensorLeft)==1){ //Demi Tour
+    else if(digitalRead(SensorRight)==1 && digitalRead(SensorLeft)==1){ //Demi Tour
       brake();
       is_runing = 0;
       Serial.write('W');
+    }
+    else{
+      analogWrite(ENA, SPEED);
+      analogWrite(ENB, SPEED);
+      digitalWrite(IN1, HIGH);
+      digitalWrite(IN2, LOW);
+      digitalWrite(IN3, LOW);
+      digitalWrite(IN4, HIGH);
     }
   }
 }
