@@ -88,10 +88,10 @@ void loop() {
   }
   if(mfrc522.PICC_IsNewCardPresent()){
     checkUid = getID();
-    if(checkUid != -1 && checkUid != card){
+    if(checkUid != -1 && card != checkUid){
       card = checkUid;
-      intersection = rechercher_Intersection(checkUid, liste_intersection);
       send_order(2);
+      //intersection = rechercher_Intersection(checkUid, liste_intersection);
     }
   }
   if(Serial.available()){
@@ -100,18 +100,6 @@ void loop() {
       send_order(2);
     }
   }
-
-  /*if(parcours.size()){
-    get_order(parcours);
-    parcours.clear();
-    intersection = rechercher_Intersection(getID(), liste_Intersection);
-    if
-    for(char ordre : ordres){
-      Serial.write(ordre);
-    }
-    ordres.clear();
-  }*/
-  
 }
 
 // HTML & CSS contents which display on web server

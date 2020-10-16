@@ -4,13 +4,14 @@ const int IN3 = 8;
 const int IN4 = 7;
 const int ENA = 6;
 const int ENB = 5; 
-const int SensorRight = 10;     
+const int SensorRight = 10;
+const int SensorCenter = 4;  
 const int SensorLeft = 2;
 
-const int SPEED = 180;
-const int SPEED_TURN = 220;
+const int SPEED = 140;
+const int SPEED_TURN = 200;
 const int TIME_FORWARD = 100;
-const int DISTANCE_STOP = 30;
+const int DISTANCE_STOP = 20;
 
 int is_runing = 0;
 int Echo = A4;
@@ -27,14 +28,15 @@ void setup(){
   pinMode(IN4, OUTPUT);
   pinMode(ENA, OUTPUT);
   pinMode(ENB, OUTPUT);
-  pinMode(SensorRight, INPUT); 
+  pinMode(SensorRight, INPUT);
+  pinMode(SensorCenter, INPUT); 
   pinMode(SensorLeft, INPUT); 
   pinMode(Echo, INPUT);
   pinMode(Trig, OUTPUT);
 }
 
 void back(){
-  while(digitalRead(SensorRight) != 0 || digitalRead(SensorLeft) != 0){
+  while(digitalRead(SensorCenter) == 1){
     analogWrite(ENA, SPEED_TURN);
     analogWrite(ENB, SPEED_TURN);
     digitalWrite(IN1, HIGH);
@@ -108,21 +110,18 @@ float mesure_Distance(){
 }
 
 void runing(){
-  if(mesure_Distance() < DISTANCE_STOP){
+  /*if(mesure_Distance() < DISTANCE_STOP){
     brake();
-  }else{
+  }else{*/
     if(digitalRead(SensorLeft)==1 && digitalRead(SensorRight)==0){ //Tourne vers la droite
       turn_right();
-    }
-    else if(digitalRead(SensorRight)==1 && digitalRead(SensorLeft)==0){ //Tourne vers la gauche
+    }else if(digitalRead(SensorLeft)==1 && digitalRead(SensorRight)==0){ //Tourne vers la gauche
       turn_left();
-    }
-    else if(digitalRead(SensorRight)==1 && digitalRead(SensorLeft)==1){ //Demi Tour
+    }else if(digitalRead(SensorCenter) == 1){ //Demi Tour
       brake();
       is_runing = 0;
       Serial.write('W');
-    }
-    else{
+    }else{
       analogWrite(ENA, SPEED);
       analogWrite(ENB, SPEED);
       digitalWrite(IN1, HIGH);
@@ -130,7 +129,7 @@ void runing(){
       digitalWrite(IN3, LOW);
       digitalWrite(IN4, HIGH);
     }
-  }
+  //}
 }
 
 char command = 'a';
