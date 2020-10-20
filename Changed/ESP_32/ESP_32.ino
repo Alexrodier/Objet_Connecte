@@ -62,7 +62,7 @@ void send_order(int nb_order){
   for(int k=0;k<nb_order;k++){  
     Serial.write(ordres[0]);
     ordres.erase(ordres.begin());
-    delay(500<<);
+    delay(500);
   }
 }
 
