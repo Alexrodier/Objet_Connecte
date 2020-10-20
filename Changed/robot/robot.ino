@@ -10,19 +10,16 @@ const int SensorLeft = 2;
 
 const int SPEED = 140;
 const int SPEED_TURN = 200;
-const int TIME_FORWARD = 100;
+const int TIME_FORWARD = 500;
 const int DISTANCE_STOP = 20;
 
-int is_runing = 0;
 int Echo = A4;
 int Trig = A5;
 int Distance = 0;
 char last_turn = 'L';
 
 void setup(){
-  Serial.begin(9600);
-  pinMode(1,INPUT);
-  pinMode(0,OUTPUT);
+  Serial.begin(115200);
   pinMode(IN1, OUTPUT);
   pinMode(IN2, OUTPUT);
   pinMode(IN3, OUTPUT);
@@ -37,9 +34,7 @@ void setup(){
 }
 
 void back(){
-  while(digitalRead(SensorCenter) == 1){
-    turn_left();
-  }
+  turn_left_90();
   brake();
 }
 
@@ -77,19 +72,19 @@ void turn_right(){
 }
 
 void turn_left_90(){
-  while(digitalRead(SensorLeft) == 0 && digitalRead(SensorRight) == 0){
+  while(digitalRead(SensorLeft) == 0 || digitalRead(SensorRight) == 0){
     turn_left();
   }
-  while(digitalRead(SensorLeft) == 1 || digitalRead(SensorRight) == 1){
+  while(digitalRead(SensorCenter) == 1 && digitalRead(SensorRight) == 1){
     turn_left();
   }
 }
 
 void turn_right_90(){
-  while(digitalRead(SensorLeft) == 0 && digitalRead(SensorRight) == 0){
+  while(digitalRead(SensorLeft) == 0 || digitalRead(SensorRight) == 0){
     turn_right();
   }
-  while(digitalRead(SensorLeft) == 1 || digitalRead(SensorRight) == 1){
+  while(digitalRead(SensorCenter) == 1 && digitalRead(SensorLeft) == 1){
     turn_right();
   }
 }
@@ -112,13 +107,13 @@ void try_distance(){
 }
 
 void runing(){
-  if(digitalRead(SensorLeft)==1 && digitalRead(SensorRight)==0){ //Tourne vers la gauche 
+  if(digitalRead(SensorLeft)==0 && digitalRead(SensorRight)==1){ //Tourne vers la gauche 
     turn_left();
     last_turn = 'L';
   }else if(digitalRead(SensorLeft)==1 && digitalRead(SensorRight)==0){ //Tourne vers la droite
     turn_right();
     last_turn = 'R';
-  }else if(digitalRead(SensorCenter) == 1){ //Perdu
+  }else if(digitalRead(SensorLeft)==1 && digitalRead(SensorCenter)==1 && digitalRead(SensorRight)==1){ //Perdu
     Serial.write('W');
     if(last_turn == 'L'){
       turn_left_90();
@@ -131,11 +126,12 @@ void runing(){
 }
 
 char command = 'a';
+int is_runing = 0;
 int has_start = 0;
 
 void loop(){
   
-  try_distance();
+  //try_distance();
   
   if(Serial.available()){
     command = Serial.read();
